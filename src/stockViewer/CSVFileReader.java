@@ -13,15 +13,6 @@ import java.util.List;
 
 public class CSVFileReader {
 	
-	public class StockData{
-		
-		public String stockName, marketName;
-		public int tickerCode;
-		public Calendar calendar;
-		public int startPrice,highPrice,lowPrice,endPrice;
-		public int amount;
-	}
-
 	public List<StockData> getStockDataList(String fileName) {
 		
 		List<StockData> stockDataList = new ArrayList<StockData>();

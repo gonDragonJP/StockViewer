@@ -20,19 +20,28 @@ public class MainApp extends Application{
 		
 		initStage(stage);
 		
-		List<CSVFileReader.StockData> list = null;
+		List<StockData> list = null;
 
-		list = new CSVFileReader().getStockDataList("2127_2019.csv");
+		list = new CSVFileReader().getStockDataList("2127_2017.csv");
 		
-		for(CSVFileReader.StockData data : list) {
+		for(StockData data : list) {
 			
-			System.out.println(data.amount);
+			System.out.println(data.lowPrice);
 		}
 		
 		DrawModule drawModule = new DrawModule(this);
 		drawModule.clearScreen();
-		drawModule.setValueRange(-100, 500);
-		drawModule.drawVirticalGrid(0);
+		drawModule.setValueRange(0, 8000);
+		drawModule.setPeriodRange(0, 300);
+		drawModule.drawVirticalGrid(2000);
+		
+		int period = 0;
+		
+		for(StockData data : list) {
+			
+			drawModule.drawPriceBar(data, period);
+			period++;
+		}
 	}
 	
 	private void initStage(Stage stage){
