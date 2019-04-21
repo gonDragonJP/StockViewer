@@ -12,33 +12,36 @@ public class DrawModule {
 		
 	}
 	
-	public void drawScreen(){
+	private int minValue, maxValue;
+	private int minPeriod, maxPeriod;
+	
+	public void setValueRange(int minValue, int maxValue){
 		
-		clearScreen();
-		drawCanvasGrid();
+		this.minValue = minValue;
+		this.maxValue = maxValue;
+	}
+	
+	private int getYcoord(int value) {
+		
+		double height = MainSceneUtil.CanvasY;
+		
+		return  (int) (height - height / (maxValue - minValue) * (value - minValue));
 	}
 	
 	public void clearScreen(){
 		
 		GraphicsContext gc = MainSceneUtil.canvas.getGraphicsContext2D();
-		gc.setFill(Color.BLACK);
+		gc.setFill(Color.ALICEBLUE);
 		gc.fillRect(0,0,MainSceneUtil.CanvasX, MainSceneUtil.CanvasY);
 	}
 	
-	public void drawCanvasGrid(){
+	public void drawVirticalGrid(int value){
 		
 		GraphicsContext gc = MainSceneUtil.canvas.getGraphicsContext2D();
-		final int gridSize = 100;
-		gc.setStroke(Color.ALICEBLUE);
+		gc.setStroke(Color.ROYALBLUE);
 		
-		double sliderValue = 0;
-		int startY = ((int)(sliderValue / gridSize)+1) * gridSize;
+		int y = getYcoord(value);
+		gc.strokeLine(0, y, MainSceneUtil.CanvasX, y);
 		
-		for(int i=startY; i < startY + MainSceneUtil.CanvasY; i+=gridSize){
-			
-			double drawY = MainSceneUtil.CanvasY - (i - sliderValue);	
-		
-			gc.strokeLine(0, drawY, MainSceneUtil.CanvasX, drawY);
-		}
 	}
 }

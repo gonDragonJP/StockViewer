@@ -29,7 +29,10 @@ public class MainApp extends Application{
 			System.out.println(data.amount);
 		}
 		
-		new DrawModule(this).drawScreen();
+		DrawModule drawModule = new DrawModule(this);
+		drawModule.clearScreen();
+		drawModule.setValueRange(-100, 500);
+		drawModule.drawVirticalGrid(0);
 	}
 	
 	private void initStage(Stage stage){
