@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -14,17 +16,21 @@ public class CSVFileReader {
 		
 		public String stockName, marketName;
 		public int tickerCode;
-		public Date date;
+		public Calendar calendar;
 		public int startPrice,highPrice,lowPrice,endPrice;
 		public int amount;
 	}
 
-	public List<StockData> getStockDataList(String fileName) throws Exception {
+	public List<StockData> getStockDataList(String fileName) {
+		
+		List<StockData> stockDataList = new ArrayList<StockData>();
 		
 		int tickerCode;
 		String stockName="", marketName="";
         
-        Reader reader = new InputStreamReader(new FileInputStream(fileName));
+		try {
+			
+		Reader reader = new InputStreamReader(new FileInputStream(fileName));
         BufferedReader br = new BufferedReader(reader);
         
         int lineNumber =0;
@@ -51,26 +57,41 @@ public class CSVFileReader {
         		StockData stockData = new StockData();
         		stockData.stockName = stockName;
         		stockData.marketName = marketName;
-        		stockData.date = getDate(data[0]);
+        		stockData.calendar = getCalendar(data[0]);
+        		stockData.startPrice = getValue(data[1]);
+        		stockData.highPrice = getValue(data[2]);
+        		stockData.lowPrice = getValue(data[3]);
+        		stockData.endPrice = getValue(data[4]);
+        		stockData.amount = getValue(data[5]);
         		
-        		
-        		
-        		//System.out.println(String.valueOf(Integer.parseInt(data[2])));
+        		stockDataList.add(stockData);
         	}
         	
         	lineNumber++;
         }
-		return null;
+		
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		return stockDataList;
     }
 	
-	private Date getDate(String token) {
+	private Calendar getCalendar(String token) {
 		
+		Calendar calendar = Calendar.getInstance();
+		int year, month, date;
+		
+		token = token.substring(1, token.length()-1);
 		String data[];
 		data = token.split("-");
+		year = Integer.parseInt(data[0]);
+		month = Integer.parseInt(data[1]);
+		date = Integer.parseInt(data[2]);
 		
+		calendar.set(year, month, date);
 		
-		
-		return null;
+		return calendar;
 	}
 	
 	private int getValue(String token) {
