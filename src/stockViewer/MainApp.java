@@ -22,6 +22,8 @@ public class MainApp extends Application{
 		
 		List<StockData> list = null;
 
+	
+		
 		list = new CSVFileReader().getStockDataList("2127_2017.csv");
 		
 		for(StockData data : list) {
