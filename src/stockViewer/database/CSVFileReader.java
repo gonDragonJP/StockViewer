@@ -1,4 +1,4 @@
-package stockViewer;
+package stockViewer.database;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import stockViewer.StockData;
 
 public class CSVFileReader {
 	
@@ -81,7 +83,7 @@ public class CSVFileReader {
 		month = Integer.parseInt(data[1]);
 		date = Integer.parseInt(data[2]);
 		
-		calendar.set(year, month, date);
+		calendar.set(year, month-1, date); // カレンダー型は月指定が0-11
 		
 		return calendar;
 	}

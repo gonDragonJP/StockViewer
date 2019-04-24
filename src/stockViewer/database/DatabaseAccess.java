@@ -102,7 +102,7 @@ public class DatabaseAccess {
 		
 		sql += "NULL,";
 		sql += String.valueOf(stockData.calendar.get(Calendar.YEAR)) +",";
-		sql += String.valueOf(stockData.calendar.get(Calendar.MONTH)) +",";
+		sql += String.valueOf(stockData.calendar.get(Calendar.MONTH)+1) +","; // CalendarŒ^‚ÍŒŽŽw’è‚ª0-11
 		sql += String.valueOf(stockData.calendar.get(Calendar.DATE)) +",";
 		sql += String.valueOf(stockData.startPrice) +",";
 		sql += String.valueOf(stockData.highPrice) +",";
@@ -132,6 +132,34 @@ public class DatabaseAccess {
 		SQLiteManager.update(sql);
 		
 		SQLiteManager.closeDatabase();
+	}
+	
+	public boolean checkExistStockData(StockData stockData) {
+		
+		SQLiteManager.initDatabase(filePath);
+		
+		String sql = "select * from "+tableName+" where year=";
+		sql += String.valueOf(stockData.calendar.get(Calendar.YEAR));
+		sql += " and month =" + String.valueOf(stockData.calendar.get(Calendar.MONTH)+1); //CalendarŒ^‚ÍŒŽ‚ª0-11
+		sql += " and date =" + String.valueOf(stockData.calendar.get(Calendar.DATE));
+		sql += ";";
+		
+		ResultSet resultSet = SQLiteManager.getResultSet(sql);
+		
+		boolean result = false;
+		
+		try {
+			result = resultSet.next();
+		} catch (SQLException e1) {
+			
+			e1.printStackTrace();
+		}
+		
+		System.out.println(sql);
+		
+		SQLiteManager.closeDatabase();
+		
+		return result;	
 	}
 }
 
