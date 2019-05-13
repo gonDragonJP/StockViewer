@@ -11,16 +11,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import stockViewer.StockData;
+import stockViewer.stockdata.StockData;
+import stockViewer.stockdata.ChartData;
 
 public class CSVFileReader {
 	
-	public List<StockData> getStockDataList(String fileName) {
+	public ChartData getChartData(String fileName) {
 		
-		List<StockData> stockDataList = new ArrayList<StockData>();
-		
-		int tickerCode;
-		String stockName="", marketName="";
+		ChartData chartData = new ChartData();
         
 		try {
 			
@@ -37,9 +35,9 @@ public class CSVFileReader {
         	case 0: 
         		data = line.split(",");
         		data = data[0].split(" ");
-        		tickerCode = Integer.parseInt(data[0]);
-        		marketName = data[1];
-        		stockName = data[2];
+        		chartData.tickerData.tickerCode = Integer.parseInt(data[0]);
+        		chartData.tickerData.marketName = data[1];
+        		chartData.tickerData.stockName = data[2];
         		break;
         	
         	case 1: break;
@@ -49,8 +47,6 @@ public class CSVFileReader {
         		data = line.split(",");
         		
         		StockData stockData = new StockData();
-        		stockData.stockName = stockName;
-        		stockData.marketName = marketName;
         		stockData.calendar = getCalendar(data[0]);
         		stockData.startPrice = getValue(data[1]);
         		stockData.highPrice = getValue(data[2]);
@@ -58,7 +54,7 @@ public class CSVFileReader {
         		stockData.endPrice = getValue(data[4]);
         		stockData.amount = getValue(data[5]);
         		
-        		stockDataList.add(stockData);
+        		chartData.stockDataList.add(stockData);
         	}
         	
         	lineNumber++;
@@ -68,7 +64,7 @@ public class CSVFileReader {
 			
 			e.printStackTrace();
 		}
-		return stockDataList;
+		return chartData;
     }
 	
 	private Calendar getCalendar(String token) {

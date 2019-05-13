@@ -5,18 +5,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import stockViewer.StockData;
+import stockViewer.stockdata.StockData;
+import stockViewer.Global;
+import stockViewer.stockdata.ChartData;
 
-public class DatabaseAccess {
+public class DBAccessOfStockDataTable {
 	
 	private String filePath;
 	
 	private String tableName;
 	
-	public DatabaseAccess(String filePath, String tableName){
+	public DBAccessOfStockDataTable(int tickerCode){
 		
-		this.filePath = filePath;
-		this.tableName = tableName;
+		this.filePath = Global.databasePath;
+		this.tableName = "table_"+String.valueOf(tickerCode);
 	}
 	
 	public void setStockDataList(ArrayList<StockData> stockDataList){
@@ -60,7 +62,7 @@ public class DatabaseAccess {
 			int year = resultSet.getInt("year");
 			int month = resultSet.getInt("month");
 			int date = resultSet.getInt("date");
-			stockData.calendar.set(year, month, date);
+			stockData.calendar.set(year, month-1, date); // calendarŒ^‚ÌŒŽ‚Í0-11Žw’è
 			
 			stockData.startPrice = resultSet.getInt("startPrice");
 			stockData.highPrice = resultSet.getInt("highPrice");
@@ -161,5 +163,7 @@ public class DatabaseAccess {
 		
 		return result;	
 	}
+	
+	
 }
 

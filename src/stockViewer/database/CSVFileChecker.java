@@ -3,12 +3,15 @@ package stockViewer.database;
 import java.io.File;
 import java.util.List;
 
-import stockViewer.StockData;
+import stockViewer.stockdata.StockData;
+import stockViewer.stockdata.ChartData;
 
-public class CSVFileChecker {
-
+public class CSVFileChecker {	
 	
-	public void checkFolder(String folderPath, DatabaseAccess da) {
+	private int readTickerCode;
+	private String readMarketName, readStockName;
+	
+	public void checkFolder(String folderPath) {
 		
 		File file = new File(folderPath);
 		
@@ -17,20 +20,22 @@ public class CSVFileChecker {
 		File[] files = file.listFiles();
 		for(File e: files){
 			
-			checkFile(e, da);
-			//System.out.println(e.getPath());
+			checkFile(e);
 		}
 	}
 	
-	private void checkFile(File file, DatabaseAccess da) {
-		
-		List<StockData> list = null;
+	private void checkFile(File file) {
 
-		list = new CSVFileReader().getStockDataList(file.getPath());
+		ChartData chartData = new CSVFileReader().getChartData(file.getPath());
 		
-		for(StockData data : list) {
+		DBAccessOfTickerDataTable da1 = new DBAccessOfTickerDataTable();
+		if(da1.getTickerData(chartData.tickerData.tickerCode) == null) da1.addTickerData(chartData.tickerData);
+		
+		DBAccessOfStockDataTable da2 = new DBAccessOfStockDataTable(chartData.tickerData.tickerCode);
+		for(StockData data : chartData.stockDataList) {
 			
-			if(!da.checkExistStockData(data)) da.addStockData(data);
+			if(!da2.checkExistStockData(data)) da2.addStockData(data);
 		}
+		
 	}
 }

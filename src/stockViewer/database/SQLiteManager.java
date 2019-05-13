@@ -43,7 +43,7 @@ public class SQLiteManager {
 
 		try {
 			statement.executeUpdate(
-					"create table "+ tableName +"("+ defColumns +");"
+					"create table if not exists "+ tableName +"("+ defColumns +");"
 			);
 			
 		} catch (SQLException e) {

@@ -1,24 +1,22 @@
 package stockViewer.database;
 
-public class TableMakerForStockData 
-					extends TableMakerForStockViewer{
+public class TableMakerForTradeData extends TableMakerForStockViewer{
 
 	static {
-	
+		
 		primaryKey = "ID";
 	}
 	
 	static String[] fieldData ={
 			
 			"ID INTEGER",
+			"tickerCode INT",
 			"year INT",
 			"month INT",
 			"date INT",
-			"startPrice INT",
-			"highPrice INT",
-			"lowPrice INT",
-			"endPrice INT",
-			"amount INT"
+			"isBuy BOOLEAN",
+			"price INT",
+			"unit INT"
 	};
 	
 //	public static void main(String[] args) {
