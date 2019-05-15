@@ -17,6 +17,7 @@ import stockViewer.database.CSVFileReader;
 import stockViewer.database.DBAccessOfStockDataTable;
 import stockViewer.database.TableMakerForStockData;
 import stockViewer.stockdata.StockData;
+import stockViewer.subscreen.SubScreenDrawModule;
 import stockViewer.stockdata.ChartData;
 import stockViewer.tickerBoardDialog.TickerBoardDialog;
 import stockViewer.tickerBoardDialog.TickerBoardDialog.TickerBoardCallback;
@@ -27,9 +28,10 @@ import stockViewer.trade.TradeDialog.TradeCallback;
 public class MainApp extends Application implements MenuUtil.MenuCallback, TickerBoardCallback, TradeCallback{
 	
 	private static final int WinX = 1440;
-	private static final int WinY = 720;
+	private static final int WinY = 720+160;
 	
 	private DrawModule drawModule;
+	private SubScreenDrawModule subDrawModule;
 	private ChartData chartData;
 	
 	private TickerBoardDialog tickerBoardDialog;
@@ -51,6 +53,7 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 		initStage(stage);
 		
 		drawModule = new DrawModule(this);
+		subDrawModule = new SubScreenDrawModule(MainSceneUtil.subCanvas);
 		tickerBoardDialog = new TickerBoardDialog(this, stage);
 		tradeDialog = new TradeDialog(this, stage);	
 	}
@@ -73,6 +76,10 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 		drawModule.drawScreen(chartData);
 		
 		if(tradeDialog.isShowing()) drawModule.drawTradeMarks(chartData, tradeDialog.tradeDataList);
+		
+		subDrawModule.setPeriodRange(startIndex, endIndex);
+		subDrawModule.clear();
+		subDrawModule.drawScreen(chartData);
 	}
 	
 	public void onCanvasMouseMoved(MouseEvent event) {
@@ -141,13 +148,13 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 	@Override
 	public void selectedTicker(int tickerCode) {
 		
-		chartData = getTickerData(tickerCode);
+		chartData = getChartData(tickerCode);
 		MainSceneUtil.initScrollBar(chartData, periodRange.getRange());
 		tradeDialog.hide();
 		drawScreen();
 	}
 	
-	private ChartData getTickerData(int tickerCode) {
+	private ChartData getChartData(int tickerCode) {
 		
 		ChartData chartData = new ChartData();
 		

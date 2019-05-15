@@ -11,7 +11,7 @@ import javafx.scene.paint.Paint;
 public class MenuUtil {
 	
 	public enum PeriodRange{
-		_20(20), _50(50), _100(100), _200(200), _500(500);
+		_50(50), _100(100), _200(200), _300(300), _500(500);
 		
 		int range;
 		

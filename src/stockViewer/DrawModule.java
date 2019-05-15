@@ -40,7 +40,7 @@ public class DrawModule {
 		
 		double width = MainSceneUtil.CanvasX;
 		
-		return  (int) (width / (maxPeriod - minPeriod) * (period - minPeriod));
+		return  (int) (width / (maxPeriod - minPeriod + 1) * (period - minPeriod));
 	}
 	
 	private int getYcoord(int value) {
@@ -54,7 +54,7 @@ public class DrawModule {
 		
 		double width = MainSceneUtil.CanvasX;
 		
-		return (int)(x * (maxPeriod - minPeriod) / width) + minPeriod;
+		return (int)(x * (maxPeriod - minPeriod + 1) / width) + minPeriod;
 	}
 	
 	public void clearScreen(){
@@ -89,7 +89,7 @@ public class DrawModule {
 		
 		if (minValue == 0) drawPricePercentGrids();
 		
-		for(int i=minPeriod; i<maxPeriod; i++) {
+		for(int i=minPeriod; i<=maxPeriod; i++) {
 			
 			if(i>chartData.stockDataList.size()-1) break;
 			
@@ -102,7 +102,7 @@ public class DrawModule {
 	
 	public void drawTradeMarks(ChartData chartData, ArrayList<TradeData> tradeList) {
 		
-		for(int i=minPeriod; i<maxPeriod; i++) {
+		for(int i=minPeriod; i<=maxPeriod; i++) {
 			
 			if(i>chartData.stockDataList.size()-1) break;
 			
@@ -120,7 +120,7 @@ public class DrawModule {
 	
 	private void drawTrendLine(ChartData tickerData) {
 		
-		for(int i=minPeriod; i<maxPeriod; i++) {
+		for(int i=minPeriod; i<=maxPeriod; i++) {
 			
 			if(i>tickerData.stockDataList.size()-1) continue;
 			if(i==0) continue;

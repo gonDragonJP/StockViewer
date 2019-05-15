@@ -24,8 +24,10 @@ public class MainSceneUtil {
 	
 	public static final int CanvasX = 1280;
 	public static final int CanvasY = 640;
+	public static final int SubCanvasY = 160;
 	
 	public static Canvas canvas = new Canvas(CanvasX, CanvasY);
+	public static Canvas subCanvas = new Canvas(CanvasX, SubCanvasY);
 	public static ScrollBar scrollBar = new ScrollBar();
 	public static Tooltip tooltip = new Tooltip();
 	public static ContextMenu contextMenu = new ContextMenu();
@@ -46,7 +48,7 @@ public class MainSceneUtil {
 		box.setPadding(new Insets(0));
 		box.setSpacing(0);
 		box.getChildren().add(MenuUtil.generateMenu(mainApp));
-		box.getChildren().addAll(canvas, scrollBar);
+		box.getChildren().addAll(canvas, scrollBar, subCanvas);
 		
 		Pane root = box;
 		Scene scene = new Scene(root);	
