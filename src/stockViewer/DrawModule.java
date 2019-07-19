@@ -8,6 +8,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
 import stockViewer.stockdata.StockData;
 import stockViewer.trade.TradeData;
 import stockViewer.stockdata.ChartData;
@@ -21,8 +23,22 @@ public class DrawModule {
 	private int minValue, maxValue;
 	private int minPeriod, maxPeriod;
 	
-	public boolean _5SMA_sw,_13SMA_sw ,_25SMA_sw, envelope_sw;
+	public boolean _5SMA_sw,_13SMA_sw ,_25SMA_sw, envelope_sw, LarrysLine_sw;
 	
+	private LarrysLine larrysLine = new LarrysLine(this);
+	
+	private Color backGroundColor = Color.BLACK;
+	
+	public void init(ChartData chartData, boolean isFilterChart) {
+		
+		initLarrysLine(chartData);
+		backGroundColor = isFilterChart ? Color.MISTYROSE : Color.ALICEBLUE;
+	}
+	
+	private void initLarrysLine(ChartData chartData) {
+		
+		larrysLine.init(chartData);
+	}
 	
 	public void setValueRange(int minValue, int maxValue){
 		
@@ -60,7 +76,7 @@ public class DrawModule {
 	public void clearScreen(){
 		
 		GraphicsContext gc = MainSceneUtil.canvas.getGraphicsContext2D();
-		gc.setFill(Color.ALICEBLUE);
+		gc.setFill(backGroundColor);
 		gc.fillRect(0,0,MainSceneUtil.CanvasX, MainSceneUtil.CanvasY);
 	}
 	
@@ -85,9 +101,18 @@ public class DrawModule {
 		
 	}
 	
-	public void drawScreen(ChartData chartData) {
+	public void drawScreen(ChartData chartData, int startIndex, int endIndex, boolean priceZoom) {
 		
-		if (minValue == 0) drawPricePercentGrids();
+		int minPrice = chartData.getMinLowPrice(startIndex, endIndex);
+		int maxPrice = chartData.getMaxHighPrice(startIndex, endIndex);
+		
+		int margin = (int)((maxPrice - minPrice) * .05d);
+		
+		setPeriodRange(startIndex, endIndex);
+		if(priceZoom) setValueRange(minPrice - margin , maxPrice + margin);
+		else setValueRange(0 , maxPrice);
+		
+		if (!priceZoom) drawPricePercentGrids();
 		
 		for(int i=minPeriod; i<=maxPeriod; i++) {
 			
@@ -118,40 +143,42 @@ public class DrawModule {
 		}
 	}
 	
-	private void drawTrendLine(ChartData tickerData) {
+	private void drawTrendLine(ChartData chartData) {
+		
+		if(LarrysLine_sw) larrysLine.draw(chartData, minPeriod, maxPeriod);
 		
 		for(int i=minPeriod; i<=maxPeriod; i++) {
 			
-			if(i>tickerData.stockDataList.size()-1) continue;
+			if(i>chartData.stockDataList.size()-1) continue;
 			if(i==0) continue;
 			
 			int price, prePrice;
 			
 			if(_5SMA_sw) {
-				price = tickerData.stockDataList.get(i)._5SMA;
-				prePrice = tickerData.stockDataList.get(i-1)._5SMA;
+				price = chartData.stockDataList.get(i)._5SMA;
+				prePrice = chartData.stockDataList.get(i-1)._5SMA;
 				if (price>0 && prePrice>0) drawLine(prePrice, price, i, Color.rgb(64, 255, 64),0);
 			}
 			
 			if(_13SMA_sw) {
-				price = tickerData.stockDataList.get(i)._13SMA;
-				prePrice = tickerData.stockDataList.get(i-1)._13SMA;
+				price = chartData.stockDataList.get(i)._13SMA;
+				prePrice = chartData.stockDataList.get(i-1)._13SMA;
 				if (price>0 && prePrice>0) drawLine(prePrice, price, i, Color.rgb(32, 210, 32),0);
 				}
 			
 			if(_25SMA_sw) {
-				price = tickerData.stockDataList.get(i)._25SMA;
-				prePrice = tickerData.stockDataList.get(i-1)._25SMA;
+				price = chartData.stockDataList.get(i)._25SMA;
+				prePrice = chartData.stockDataList.get(i-1)._25SMA;
 				if (price>0 && prePrice>0) drawLine(prePrice, price, i, Color.rgb(0, 180, 0),0);
 				}
 			
 			if(envelope_sw) {
-				price = (int)(tickerData.stockDataList.get(i)._13SMA * 1.05f);
-				prePrice = (int)(tickerData.stockDataList.get(i-1)._13SMA * 1.05f);
+				price = (int)(chartData.stockDataList.get(i)._13SMA * 1.05f);
+				prePrice = (int)(chartData.stockDataList.get(i-1)._13SMA * 1.05f);
 				if (price>0 && prePrice>0) drawLine(prePrice, price, i, Color.rgb(128, 210, 128),5);
 				
-				price = (int)(tickerData.stockDataList.get(i)._13SMA * 0.95f);
-				prePrice = (int)(tickerData.stockDataList.get(i-1)._13SMA * 0.95f);
+				price = (int)(chartData.stockDataList.get(i)._13SMA * 0.95f);
+				prePrice = (int)(chartData.stockDataList.get(i-1)._13SMA * 0.95f);
 				if (price>0 && prePrice>0) drawLine(prePrice, price, i, Color.rgb(128, 210, 128),5);
 				}
 		}
@@ -222,6 +249,21 @@ public class DrawModule {
 		GraphicsContext gc = MainSceneUtil.canvas.getGraphicsContext2D();
 		gc.setStroke(color);
 		gc.setLineDashes(dash);
+		gc.setLineWidth(1);
+		gc.strokeLine(startX, startY, endX, endY);
+	}
+	
+	public void drawLine(int prePrice, int price, int prePeriod, int period, Color color, double dash) {
+		
+		double startX = (getXcoord(prePeriod) + getXcoord(prePeriod+1))/2;
+		double endX = (getXcoord(period) + getXcoord(period+1))/2;
+		double startY = getYcoord(prePrice);
+		double endY = getYcoord(price);
+		
+		GraphicsContext gc = MainSceneUtil.canvas.getGraphicsContext2D();
+		gc.setStroke(color);
+		gc.setLineDashes(dash);
+		gc.setLineWidth(1);
 		gc.strokeLine(startX, startY, endX, endY);
 	}
 	
@@ -239,5 +281,22 @@ public class DrawModule {
 		GraphicsContext gc = MainSceneUtil.canvas.getGraphicsContext2D();
 		gc.setFill(Color.GREEN);
 		gc.fillPolygon(xPoints, yPoints, 3);
+	}
+	
+	public void drawExtPriceMark(boolean isHighExt, int price, int period, double lineWidth) {
+		
+		double X1 = getXcoord(period);
+		double X2 = getXcoord(period+1);
+		double d = X2-X1;
+		double Y1 = getYcoord(price);
+		double Y2 = isHighExt ? Y1-d : Y1;
+		double startAngle = isHighExt ? 0 : 180;
+		
+		GraphicsContext gc = MainSceneUtil.canvas.getGraphicsContext2D();
+		gc.setStroke(Color.GREEN);
+		gc.setLineDashes(0);
+		gc.setLineWidth(lineWidth);
+		gc.strokeArc(X1, Y2, d, d, startAngle, 180, ArcType.OPEN);
+		
 	}
 }

@@ -36,10 +36,12 @@ public class MainSceneUtil {
 	public static int tradePrice, tradeUnit;
 	
 	private static MainApp mainApp;
+	private static Stage mainStage;
 	
 	public static void setScene(MainApp appArg, Stage stage){
 		
 		mainApp = appArg;
+		mainStage = stage;
 		
 		initCanvas();
 		initContextMenu();
@@ -53,6 +55,11 @@ public class MainSceneUtil {
 		Pane root = box;
 		Scene scene = new Scene(root);	
 		stage.setScene(scene);
+	}
+	
+	public static void setTitle(String title) {
+		
+		mainStage.setTitle(title);
 	}
 	
 	private static void initCanvas() {

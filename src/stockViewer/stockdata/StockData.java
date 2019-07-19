@@ -17,6 +17,20 @@ public class StockData{
 		calendar.clear();
 	}
 	
+	public StockData clone() {
+		
+		StockData clone = new StockData();
+		clone.databaseID = databaseID;
+		clone.calendar = (Calendar)calendar.clone();
+		clone.startPrice = startPrice;
+		clone.highPrice = highPrice;
+		clone.lowPrice = lowPrice;
+		clone.endPrice = endPrice;
+		clone.amount = amount;
+		
+		return clone;
+	}
+	
 	public int getPriceRange() {
 		
 		return highPrice - lowPrice;

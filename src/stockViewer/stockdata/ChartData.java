@@ -26,6 +26,7 @@ public class ChartData {
 		DBAccessOfStockDataTable da2 = new DBAccessOfStockDataTable(tickerCode);
 		da2.setStockDataList(stockDataList);
 		
+		stockDataList = WeeklyChartComposer.make(stockDataList);
 		setSMA();
 	}
 	
@@ -34,6 +35,14 @@ public class ChartData {
 		if (index >= stockDataList.size()) return null;
 		
 		return stockDataList.get(index).calendar;
+	}
+	
+	public int getIndexByDate(Calendar date) {
+		
+		for(int i=0; i<stockDataList.size(); i++) {
+			if(stockDataList.get(i).calendar.compareTo(date) ==0) return i; 
+		}
+		return -1;
 	}
 	
 	public String getDateString(int index) {
@@ -72,7 +81,7 @@ public class ChartData {
 		}
 	}
 	
-	private int getSMA(int index, int range) {
+	public int getSMA(int index, int range) {
 		
 		int result = -1;
 		int sum = 0;
@@ -98,6 +107,7 @@ public class ChartData {
 		
 		for(int i=startIndex; i<=endIndex; i++) {
 			
+			if(i>=stockDataList.size()) break;
 			result = Math.max(result, stockDataList.get(i).highPrice);
 		}
 		return result;
@@ -109,7 +119,19 @@ public class ChartData {
 		
 		for(int i=startIndex; i<=endIndex; i++) {
 			
+			if(i>=stockDataList.size()) break;
 			result = Math.min(result, stockDataList.get(i).lowPrice);
+		}
+		return result;
+	}
+	
+	public int getMaxHighAmount(int startIndex, int endIndex) {
+		
+		int result = -1;
+		
+		for(int i=startIndex; i<=endIndex; i++) {
+			
+			result = Math.max(result, stockDataList.get(i).amount);
 		}
 		return result;
 	}

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -21,10 +22,16 @@ import stockViewer.database.DBAccessOfTradeDataTable;
 import stockViewer.database.TableMakerForTradeData;
 import stockViewer.stockdata.ChartData;
 import stockViewer.stockdata.TickerData;
+import stockViewer.trade.GenerateTable.ResultTableField;
 import stockViewer.trade.GenerateTable.TableCallback;
 import stockViewer.trade.MenuUtil.MenuCallback;
+import stockViewer.trade.algorithm.TradingAlgoShell;
 
 public class TradeDialog extends Stage implements MenuCallback, TableCallback{
+	
+	public static final double DIALOG_WIDTH = 500, DIALOG_HEIGHT = 780;
+	public static final double TABLE_HEIGHT = 200, RESULT_TABLE_HEIGHT = 280;
+	public static final double GRAPH_WIDTH = 450, GRAPH_HEIGHT = 200;
 	
 	public interface TradeCallback{
 		
@@ -35,8 +42,17 @@ public class TradeDialog extends Stage implements MenuCallback, TableCallback{
 
 	private MenuBar menuBar;
 	private TableView<TradeData> tableView;
-	public ArrayList<TradeData> tradeDataList;
+	public TradeDataList tradeDataList = new TradeDataList();
+	private TableView<ResultTableField> resultTable;
+	private ResultData resultData = new ResultData();;
+	
 	private ContextMenu contextMenu = new ContextMenu();
+	
+	private Canvas graphCanvas = new Canvas(GRAPH_WIDTH, GRAPH_HEIGHT);
+	private TradeResultGraph resultGraph = new TradeResultGraph(graphCanvas);
+	
+	private enum TradeMode{MANUAL, ALGORITHM};
+	private TradeMode tradeMode;
 	
 	public TradeDialog(TradeCallback callable, Window parentWnd) {
 		
@@ -45,7 +61,7 @@ public class TradeDialog extends Stage implements MenuCallback, TableCallback{
 		
 		menuBar = MenuUtil.generateMenu(this);
 		tableView = GenerateTable.gen(this);
-		tradeDataList = new ArrayList<>();
+		resultTable = GenerateTable.gen(resultData);
 		
 		this.setOnHidden(event -> {tradeCallback.requestRedrawScreen();});
 		
@@ -55,8 +71,17 @@ public class TradeDialog extends Stage implements MenuCallback, TableCallback{
 	
 	public void open(int tickerCode) {
 		
+		tradeMode = TradeMode.MANUAL;
 		DBAccessOfTradeDataTable dba = new DBAccessOfTradeDataTable();
 		dba.setTradeDataList(tickerCode, tradeDataList);
+		this.show();
+		updateTable();
+	}
+	
+	public void open(TradingAlgoShell algoShell) {
+		
+		tradeMode = TradeMode.ALGORITHM;
+		tradeDataList = algoShell.tradeDataList;
 		this.show();
 		updateTable();
 	}
@@ -64,11 +89,11 @@ public class TradeDialog extends Stage implements MenuCallback, TableCallback{
 	private void setScene() {
 		
 		this.setTitle("TradeDialog");
-		this.setWidth(500);
-		this.setHeight(720);
+		this.setWidth(DIALOG_WIDTH);
+		this.setHeight(DIALOG_HEIGHT);
 
 		VBox root = new VBox();
-		root.getChildren().addAll(menuBar, tableView);
+		root.getChildren().addAll(menuBar, tableView, graphCanvas, resultTable);
 		Scene scene = new Scene(root);
 		this.setScene(scene);
 	}
@@ -87,35 +112,15 @@ public class TradeDialog extends Stage implements MenuCallback, TableCallback{
 	}
 	
 	private void updateTable(){
-	
-		calcList();
 		
 		ObservableList<TradeData> tableData = FXCollections.observableArrayList();
 		tableData.setAll(tradeDataList);
 		tableView.itemsProperty().setValue(tableData);
 		
 		tradeCallback.requestRedrawScreen();
-	}
-	
-	private void calcList() {
-		
-		int sumUnit =0, acount =0;
-		int preBalancedAcount =0;
-		
-		for(TradeData e: tradeDataList) {
-			
-			sumUnit = e.getSumUnit(sumUnit);
-			e.sumUnit = sumUnit;
-			
-			acount = e.getAcount(acount);
-			e.acount = acount;
-			
-			e.setProfit(preBalancedAcount);
-			
-			if(sumUnit==0) {
-				preBalancedAcount = acount;
-			}
-		}
+		resultGraph.refresh(tradeDataList);
+		resultData.calc(resultGraph.clearingPointList);
+		resultTable.refresh();
 	}
 	
 	public void addTradeData(int tickerCode, Calendar date, boolean isBuy, int price, int unit) {

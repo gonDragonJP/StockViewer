@@ -3,11 +3,15 @@ package stockViewer.trade;
 import java.lang.reflect.Field;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import stockViewer.stockdata.ChartData;
 import stockViewer.stockdata.TickerData;
+import stockViewer.trade.GenerateTable.ResultTableField;
 
 public class GenerateTable {
 	
@@ -39,6 +43,31 @@ public class GenerateTable {
 		}
 	}
 	
+	public enum ResultTableField{
+		
+		Win_Rate("winRate","%"),
+		Win_Number("winNumber",""),
+		lose_Number("loseNumber",""),
+		
+		Ave_Profit("aveProfit",""),
+		Ave_Loss("aveLoss",""),
+		ProfitFactor("profitFactor",""),
+		
+		Max_RowWin("maxRowWin",""),
+		Max_RowLose("maxRowLose",""),
+		
+		Total_Profit("totalProfit",""),
+		Max_DrawDown("maxDrawDown","");
+		
+		public String fieldName;
+		public String unit;
+		
+		ResultTableField(String fieldName, String unit){
+			this.fieldName = fieldName;
+			this.unit = unit;
+		}
+	}
+	
 	public static TableView<TradeData> gen(TableCallback callable) {
 		
 		tableCallback = callable;
@@ -65,7 +94,39 @@ public class GenerateTable {
 		tableView.getColumns().addAll(columns);
 		tableView.setOnMouseClicked(event -> tableCallback.tableClicked(event));
 		
-		tableView.setPrefHeight(200);
+		tableView.setPrefHeight(TradeDialog.TABLE_HEIGHT);
+		
+		return tableView;
+	}
+	
+	public static TableView<ResultTableField> gen(ResultData resultData) {
+		
+		TableView<ResultTableField> tableView = new TableView<>();
+		
+		@SuppressWarnings("unchecked")
+		TableColumn<ResultTableField,String>[] columns = new TableColumn[2];
+		
+		columns[0] = new TableColumn<>("Result Term");
+		columns[0].setPrefWidth(200);
+		columns[0].setCellValueFactory(param -> new SimpleStringProperty(param.getValue().toString()));
+		
+		columns[1] = new TableColumn<>("");
+		columns[1].setPrefWidth(200);
+		columns[1].setCellValueFactory(param ->{
+			
+				String valText = getReflectedFieldAsString(resultData, param.getValue().fieldName);
+				valText += param.getValue().unit;
+				
+				return new SimpleStringProperty(valText);
+			});
+		columns[1].setCellFactory(TextFieldTableCell.forTableColumn());
+		
+		tableView.getColumns().addAll(columns);
+		tableView.setPrefHeight(TradeDialog.RESULT_TABLE_HEIGHT);
+		
+		ObservableList<ResultTableField> resultTableData = FXCollections.observableArrayList();
+		resultTableData.setAll(ResultTableField.values());
+		tableView.itemsProperty().setValue(resultTableData);
 		
 		return tableView;
 	}

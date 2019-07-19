@@ -16,14 +16,14 @@ import stockViewer.stockdata.ChartData;
 
 public class SubScreenDrawModule {
 	
+	public enum Technical {NONE, STOCHASTICS, PRICEMOVEMENTBAR, DIRECTIONALINDEX, TURNOVER};
+	
+	private Stochastics stochastics = new Stochastics(this);
+	private PriceMovementIndicator priceMovementIndicator = new PriceMovementIndicator(this);
+	private Turnover turnover = new Turnover(this);
+	
 	private GraphicsContext context;
 	private double canvasX, canvasY;
-	
-	private Color backGroundColor = Color.GAINSBORO;
-	
-	private Stochastics stocastics = new Stochastics(this);
-	private PriceRangeBar priceRangeBar = new PriceRangeBar(this);
-	
 	
 	public SubScreenDrawModule(Canvas canvas){
 		
@@ -33,13 +33,17 @@ public class SubScreenDrawModule {
 		canvasY = canvas.getHeight();
 	}
 	
-	private int minValue, maxValue;
+	private Technical nowShowingTechnical = Technical.NONE;
+	
+	public void setShowingTechnical(Technical technical) {
+		
+		nowShowingTechnical = technical;
+	}
+	
+	private double minValue, maxValue;
 	private int minPeriod, maxPeriod;
 	
-	public boolean _5SMA_sw,_13SMA_sw ,_25SMA_sw, envelope_sw;
-	
-	
-	public void setValueRange(int minValue, int maxValue){
+	public void setValueRange(double minValue, double maxValue){
 		
 		this.minValue = minValue;
 		this.maxValue = maxValue;
@@ -66,10 +70,45 @@ public class SubScreenDrawModule {
 		return (int)(x * (maxPeriod - minPeriod + 1) / canvasX) + minPeriod;
 	}
 	
-	public void clear() {
+	private Color backGroundColor = Color.GAINSBORO;
+	
+	public void clearScreen() {
 		
 		context.setFill(backGroundColor);
 		context.fillRect(0,0, canvasX, canvasY);
+	}
+	
+	public void drawScreen(ChartData chartData, int startIndex, int endIndex) {
+		
+		setPeriodRange(startIndex, endIndex);
+		
+		int minPrice = chartData.getMinLowPrice(startIndex, endIndex);
+		int maxPrice = chartData.getMaxHighPrice(startIndex, endIndex);
+		
+		switch(nowShowingTechnical) {
+		
+		case NONE: break;
+		
+		case STOCHASTICS:
+			stochastics.init();
+			stochastics.draw(chartData, minPeriod, maxPeriod);
+			break;
+			
+		case PRICEMOVEMENTBAR:
+			priceMovementIndicator.init(minPrice, maxPrice, Technical.PRICEMOVEMENTBAR);
+			priceMovementIndicator.draw(chartData, minPeriod, maxPeriod, Technical.PRICEMOVEMENTBAR);
+			break;
+			
+		case DIRECTIONALINDEX:
+			priceMovementIndicator.init(minPrice, maxPrice, Technical.DIRECTIONALINDEX);
+			priceMovementIndicator.draw(chartData, minPeriod, maxPeriod, Technical.DIRECTIONALINDEX);
+			break;
+			
+		case TURNOVER:
+			turnover.init(chartData.getMaxHighAmount(minPeriod, maxPeriod));
+			turnover.draw(chartData, minPeriod, maxPeriod);
+			break;
+		}
 	}
 	
 	public void drawVirticalGrid(int value, Color color, double dash){
@@ -112,14 +151,6 @@ public class SubScreenDrawModule {
 		
 		context.setFill(color);
 		context.fillRect(left, top, width, height);
-	}
-	
-	public void drawScreen(ChartData chartData) {
-		
-		//stocastics.init();
-		priceRangeBar.init();
-		//stocastics.draw(chartData, minPeriod, maxPeriod);
-		priceRangeBar.draw(chartData, minPeriod, maxPeriod);
 	}
 	
 	private void drawTradeMark(boolean isBuy, int price, int period) {

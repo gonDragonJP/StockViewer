@@ -8,6 +8,7 @@ import java.util.Calendar;
 import stockViewer.Global;
 import stockViewer.stockdata.StockData;
 import stockViewer.trade.TradeData;
+import stockViewer.trade.TradeDataList;
 
 public class DBAccessOfTradeDataTable {
 	
@@ -21,7 +22,7 @@ public class DBAccessOfTradeDataTable {
 		this.tableName = "tradeRecord_Manual";
 	}
 	
-	public void setTradeDataList(int tickerCode, ArrayList<TradeData> tradeDataList){
+	public void setTradeDataList(int tickerCode, TradeDataList tradeDataList){
 		
 		tradeDataList.clear();
 		

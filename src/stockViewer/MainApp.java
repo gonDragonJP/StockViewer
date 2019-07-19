@@ -12,20 +12,27 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import stockViewer.MenuUtil.OnOrOff;
 import stockViewer.MenuUtil.PeriodRange;
+import stockViewer.MenuUtil.TradeMode;
 import stockViewer.database.CSVFileChecker;
 import stockViewer.database.CSVFileReader;
 import stockViewer.database.DBAccessOfStockDataTable;
 import stockViewer.database.TableMakerForStockData;
+import stockViewer.filterChart.FilterChart;
 import stockViewer.stockdata.StockData;
 import stockViewer.subscreen.SubScreenDrawModule;
+import stockViewer.subscreen.SubScreenDrawModule.Technical;
 import stockViewer.stockdata.ChartData;
 import stockViewer.tickerBoardDialog.TickerBoardDialog;
 import stockViewer.tickerBoardDialog.TickerBoardDialog.TickerBoardCallback;
 import stockViewer.trade.TradeDialog;
 import stockViewer.trade.TradeDialog.TradeCallback;
+import stockViewer.trade.algorithm.Oshime_Buy_01;
+import stockViewer.trade.algorithm.RandomTest;
 
 
 public class MainApp extends Application implements MenuUtil.MenuCallback, TickerBoardCallback, TradeCallback{
+	
+	private static final String AppTitle ="StockViewer ver1.0";
 	
 	private static final int WinX = 1440;
 	private static final int WinY = 720+160;
@@ -65,21 +72,13 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 		int startIndex = (int) MainSceneUtil.scrollBar.getValue();
 		int endIndex = startIndex + periodRange.getRange() -1;
 		
-		int minPrice = chartData.getMinLowPrice(startIndex, endIndex);
-		if (!priceZoom) minPrice = 0;
-		int maxPrice = chartData.getMaxHighPrice(startIndex, endIndex);
-		
-		drawModule.setPeriodRange(startIndex, endIndex);
-		drawModule.setValueRange(minPrice, maxPrice);
-		
 		drawModule.clearScreen();
-		drawModule.drawScreen(chartData);
+		drawModule.drawScreen(chartData, startIndex, endIndex, priceZoom);
 		
 		if(tradeDialog.isShowing()) drawModule.drawTradeMarks(chartData, tradeDialog.tradeDataList);
-		
-		subDrawModule.setPeriodRange(startIndex, endIndex);
-		subDrawModule.clear();
-		subDrawModule.drawScreen(chartData);
+	
+		subDrawModule.clearScreen();
+		subDrawModule.drawScreen(chartData, startIndex, endIndex);
 	}
 	
 	public void onCanvasMouseMoved(MouseEvent event) {
@@ -117,7 +116,7 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 		
 		MainSceneUtil.setScene(this, stage);
 	
-		stage.setTitle("StockViewer ver1.0");
+		stage.setTitle(AppTitle);
 		stage.setWidth(WinX);
 		stage.setHeight(WinY);
 		stage.show();
@@ -146,20 +145,20 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 	}
 	
 	@Override
-	public void selectedTicker(int tickerCode) {
+	public void selectedTicker(int tickerCode, boolean isFilterChart) {
 		
 		chartData = getChartData(tickerCode);
 		MainSceneUtil.initScrollBar(chartData, periodRange.getRange());
+		MainSceneUtil.setTitle(AppTitle + " - " + chartData.tickerData.stockName); 
 		tradeDialog.hide();
+		drawModule.init(chartData, isFilterChart);
 		drawScreen();
 	}
 	
 	private ChartData getChartData(int tickerCode) {
 		
-		ChartData chartData = new ChartData();
-		
+		ChartData chartData = new ChartData();	
 		chartData.loadDB(tickerCode);
-		
 		return chartData;
 	}
 
@@ -176,17 +175,29 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 	    case "25-SMA" : drawModule._25SMA_sw = cb.isSelected(); break;
 	    
 	    case "Envelope" : drawModule.envelope_sw = cb.isSelected(); break;
+	    case "LarrysLine" : drawModule.LarrysLine_sw = cb.isSelected(); break;
 	    }
 	    
 	    drawScreen();
 	}
 
 	@Override
-	public void openTrade() {
+	public void openTrade(TradeMode tradeMode) {
 		
 		if(chartData == null) return;
 		
-		tradeDialog.open(chartData.tickerData.tickerCode);
+		switch(tradeMode) {
+		
+		case Manual:
+			tradeDialog.open(chartData.tickerData.tickerCode);
+			break;
+		case RandomTest:
+			tradeDialog.open(new RandomTest(chartData));
+			break;
+		case Oshime_01:
+			tradeDialog.open(new Oshime_Buy_01(chartData));
+			break;
+		}
 	}
 
 	@Override
@@ -194,5 +205,17 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 		
 		drawScreen();
 	}
-	
+
+	@Override
+	public void setSubScreen(Technical technical) {
+		
+		subDrawModule.setShowingTechnical(technical);
+		drawScreen();
+	}
+
+	@Override
+	public void openFilterChart(int tickerCode) {
+		
+		selectedTicker(tickerCode, true);
+	}
 }

@@ -26,7 +26,7 @@ public class TickerBoardDialog extends Stage implements MenuCallback, TableCallb
 	
 	public interface TickerBoardCallback{
 		
-		void selectedTicker(int tickerCode);
+		void selectedTicker(int tickerCode, boolean isFilterChart);
 	}
 	
 	private TickerBoardCallback tickerBoardCallback;
@@ -115,6 +115,6 @@ public class TickerBoardDialog extends Stage implements MenuCallback, TableCallb
 		
 		TickerData data = tableView.getSelectionModel().getSelectedItem();
 		
-		tickerBoardCallback.selectedTicker(data.tickerCode);
+		tickerBoardCallback.selectedTicker(data.tickerCode, false);
 	}
 }
