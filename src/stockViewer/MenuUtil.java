@@ -8,6 +8,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Paint;
 import stockViewer.filterChart.FilterChart;
+import stockViewer.stockdata.ChartData;
 import stockViewer.subscreen.SubScreenDrawModule.Technical;
 
 public class MenuUtil {
@@ -39,6 +40,8 @@ public class MenuUtil {
 		void openDatabase();
 
 		void setPeriodRange(PeriodRange range);
+		
+		void setChartSpan(ChartData.ChartSpan span);
 
 		void setPriceZoom(OnOrOff sw);
 
@@ -85,12 +88,13 @@ public class MenuUtil {
 
 	private static void setScopeMenu(Menu menu) {
 
-		String[] menuNames = { "ShowingPeriodRange", "PriceZoom" };
+		String[] menuNames = { "ShowingPeriodRange", "ChartSpan", "PriceZoom" };
 		Menu[] menus = generateMenuArray(menuNames);
 		menu.getItems().addAll(menus);
 
 		setPeriodRangeMenu(menus[0]);
-		setPriceZoomMenu(menus[1]);
+		setChartSpanMenu(menus[1]);
+		setPriceZoomMenu(menus[2]);
 	}
 
 	private static void setPeriodRangeMenu(Menu menu) {
@@ -102,6 +106,19 @@ public class MenuUtil {
 
 			menuItems[e.ordinal()].setOnAction(event -> {
 				menuCallback.setPeriodRange(e);
+			});
+		}
+	}
+	
+	private static void setChartSpanMenu(Menu menu) {
+
+		MenuItem[] menuItems = generateMenuItemArray(ChartData.ChartSpan.values());
+		menu.getItems().addAll(menuItems);
+
+		for (ChartData.ChartSpan e : ChartData.ChartSpan.values()) {
+
+			menuItems[e.ordinal()].setOnAction(event -> {
+				menuCallback.setChartSpan(e);
 			});
 		}
 	}

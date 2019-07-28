@@ -11,12 +11,15 @@ public class ChartData {
 	
 	public TickerData tickerData;
 	
+	private ArrayList<StockData> dailyDataList, weeklyDataList;
 	public ArrayList<StockData> stockDataList;
 	
 	public ChartData() {
 		
 		tickerData = new TickerData();
-		stockDataList = new ArrayList<StockData>();
+		dailyDataList = new ArrayList<StockData>();
+		weeklyDataList = new ArrayList<StockData>();
+		stockDataList = null;
 	}
 	
 	public void loadDB(int tickerCode) {
@@ -24,10 +27,40 @@ public class ChartData {
 		DBAccessOfTickerDataTable da1 = new DBAccessOfTickerDataTable();
 		tickerData = da1.getTickerData(tickerCode);
 		DBAccessOfStockDataTable da2 = new DBAccessOfStockDataTable(tickerCode);
-		da2.setStockDataList(stockDataList);
+		da2.setStockDataList(dailyDataList);
 		
-		stockDataList = WeeklyChartComposer.make(stockDataList);
+		weeklyDataList = WeeklyChartComposer.make(dailyDataList);
+		
+		selectChartSpan(ChartSpan.DAILY);
+	}
+	
+	public enum ChartSpan{DAILY, WEEKLY, MONTHLY};
+	
+	public void selectChartSpan(ChartSpan span) {
+		
+		switch (span) {
+		
+		case DAILY:
+			stockDataList = dailyDataList;
+			break;
+		case WEEKLY:
+			stockDataList = weeklyDataList;
+			break;
+		default:
+			stockDataList = dailyDataList;
+		}
+		
 		setSMA();
+	}
+	
+	private void setSMA() {
+		
+		for(int i=0; i<stockDataList.size(); i++) {
+			
+			stockDataList.get(i)._5SMA = getSMA(i, 5);
+			stockDataList.get(i)._13SMA = getSMA(i, 13);
+			stockDataList.get(i)._25SMA = getSMA(i, 25);
+		}
 	}
 	
 	public Calendar getDate(int index) {
@@ -71,15 +104,7 @@ public class ChartData {
 				+String.valueOf(cal.get(Calendar.DATE));
 	}
 	
-	public void setSMA() {
-		
-		for(int i=0; i<stockDataList.size(); i++) {
-			
-			stockDataList.get(i)._5SMA = getSMA(i, 5);
-			stockDataList.get(i)._13SMA = getSMA(i, 13);
-			stockDataList.get(i)._25SMA = getSMA(i, 25);
-		}
-	}
+	
 	
 	public int getSMA(int index, int range) {
 		

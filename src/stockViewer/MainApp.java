@@ -22,6 +22,7 @@ import stockViewer.stockdata.StockData;
 import stockViewer.subscreen.SubScreenDrawModule;
 import stockViewer.subscreen.SubScreenDrawModule.Technical;
 import stockViewer.stockdata.ChartData;
+import stockViewer.stockdata.ChartData.ChartSpan;
 import stockViewer.tickerBoardDialog.TickerBoardDialog;
 import stockViewer.tickerBoardDialog.TickerBoardDialog.TickerBoardCallback;
 import stockViewer.trade.TradeDialog;
@@ -129,6 +130,14 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 		MainSceneUtil.initScrollBar(chartData, periodRange.getRange());
 		drawScreen();
 	}
+	
+	@Override
+	public void setChartSpan(ChartSpan span) {
+		
+		chartData.selectChartSpan(span);
+		MainSceneUtil.initScrollBar(chartData, periodRange.getRange());
+		drawScreen();
+	}
 
 	@Override
 	public void setPriceZoom(OnOrOff sw) {
@@ -218,4 +227,5 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 		
 		selectedTicker(tickerCode, true);
 	}
+
 }
