@@ -14,6 +14,9 @@ public class ChartData {
 	private ArrayList<StockData> dailyDataList, weeklyDataList;
 	public ArrayList<StockData> stockDataList;
 	
+	public enum ChartSpan{DAILY, WEEKLY};
+	private ChartSpan chartSpan;
+	
 	public ChartData() {
 		
 		tickerData = new TickerData();
@@ -34,9 +37,14 @@ public class ChartData {
 		selectChartSpan(ChartSpan.DAILY);
 	}
 	
-	public enum ChartSpan{DAILY, WEEKLY, MONTHLY};
+	public String getChartTitle() {
+		
+		return tickerData.stockName + chartSpan.toString();
+	}
 	
 	public void selectChartSpan(ChartSpan span) {
+		
+		chartSpan = span;
 		
 		switch (span) {
 		
@@ -103,8 +111,6 @@ public class ChartData {
 				+String.valueOf(cal.get(Calendar.MONTH)+1)+"/"
 				+String.valueOf(cal.get(Calendar.DATE));
 	}
-	
-	
 	
 	public int getSMA(int index, int range) {
 		

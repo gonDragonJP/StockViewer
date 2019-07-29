@@ -66,6 +66,13 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 		tradeDialog = new TradeDialog(this, stage);	
 	}
 	
+	private void initScreen() {
+		
+		MainSceneUtil.initScrollBar(chartData, periodRange.getRange());
+		MainSceneUtil.setTitle(AppTitle + " - " + chartData.getChartTitle());
+		drawScreen();
+	}
+	
 	public void drawScreen() {
 		
 		if(chartData==null) return;
@@ -127,16 +134,14 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 	public void setPeriodRange(PeriodRange range) {
 		
 		periodRange = range;
-		MainSceneUtil.initScrollBar(chartData, periodRange.getRange());
-		drawScreen();
+		initScreen();
 	}
 	
 	@Override
 	public void setChartSpan(ChartSpan span) {
 		
 		chartData.selectChartSpan(span);
-		MainSceneUtil.initScrollBar(chartData, periodRange.getRange());
-		drawScreen();
+		initScreen();
 	}
 
 	@Override
@@ -157,11 +162,9 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 	public void selectedTicker(int tickerCode, boolean isFilterChart) {
 		
 		chartData = getChartData(tickerCode);
-		MainSceneUtil.initScrollBar(chartData, periodRange.getRange());
-		MainSceneUtil.setTitle(AppTitle + " - " + chartData.tickerData.stockName); 
 		tradeDialog.hide();
 		drawModule.init(chartData, isFilterChart);
-		drawScreen();
+		initScreen();
 	}
 	
 	private ChartData getChartData(int tickerCode) {
