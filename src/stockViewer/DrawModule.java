@@ -12,6 +12,7 @@ import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import stockViewer.stockdata.StockData;
 import stockViewer.trade.TradeData;
+import stockViewer.analysis.LarrysLine;
 import stockViewer.stockdata.ChartData;
 
 public class DrawModule {

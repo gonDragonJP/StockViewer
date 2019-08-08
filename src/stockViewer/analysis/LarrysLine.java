@@ -1,9 +1,11 @@
-package stockViewer;
+
+package stockViewer.analysis;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import javafx.scene.paint.Color;
+import stockViewer.DrawModule;
 import stockViewer.stockdata.ChartData;
 import stockViewer.stockdata.StockData;
 
