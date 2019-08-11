@@ -13,6 +13,7 @@ import javafx.scene.shape.ArcType;
 import stockViewer.stockdata.StockData;
 import stockViewer.trade.TradeData;
 import stockViewer.analysis.LarrysLine;
+import stockViewer.analysis.RegressionLine;
 import stockViewer.stockdata.ChartData;
 
 public class DrawModule {
@@ -24,21 +25,32 @@ public class DrawModule {
 	private int minValue, maxValue;
 	private int minPeriod, maxPeriod;
 	
-	public boolean _5SMA_sw,_13SMA_sw ,_25SMA_sw, envelope_sw, LarrysLine_sw;
+	public boolean _5SMA_sw,_13SMA_sw ,_25SMA_sw, envelope_sw, LarrysLine_sw, RegressionLine_sw;
 	
 	private LarrysLine larrysLine = new LarrysLine(this);
+	private RegressionLine regressionLine = new RegressionLine(this);
 	
 	private Color backGroundColor = Color.BLACK;
 	
-	public void init(ChartData chartData, boolean isFilterChart) {
+	public void init(ChartData chartData) {
 		
 		initLarrysLine(chartData);
+		initRegressionLine(chartData);
+	}
+	
+	public void setFilterChart(boolean isFilterChart) {
+		
 		backGroundColor = isFilterChart ? Color.MISTYROSE : Color.ALICEBLUE;
 	}
 	
 	private void initLarrysLine(ChartData chartData) {
 		
 		larrysLine.init(chartData);
+	}
+	
+	private void initRegressionLine(ChartData chartData) {
+		
+		regressionLine.init(chartData);
 	}
 	
 	public void setValueRange(int minValue, int maxValue){
@@ -147,6 +159,7 @@ public class DrawModule {
 	private void drawTrendLine(ChartData chartData) {
 		
 		if(LarrysLine_sw) larrysLine.draw(chartData, minPeriod, maxPeriod);
+		if(RegressionLine_sw) regressionLine.draw(chartData, minPeriod, maxPeriod);
 		
 		for(int i=minPeriod; i<=maxPeriod; i++) {
 			

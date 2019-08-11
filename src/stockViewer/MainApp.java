@@ -70,6 +70,7 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 		
 		MainSceneUtil.initScrollBar(chartData, periodRange.getRange());
 		MainSceneUtil.setTitle(AppTitle + " - " + chartData.getChartTitle());
+		drawModule.init(chartData);
 		drawScreen();
 	}
 	
@@ -163,7 +164,7 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 		
 		chartData = getChartData(tickerCode);
 		tradeDialog.hide();
-		drawModule.init(chartData, isFilterChart);
+		drawModule.setFilterChart(isFilterChart);
 		initScreen();
 	}
 	
@@ -188,6 +189,7 @@ public class MainApp extends Application implements MenuUtil.MenuCallback, Ticke
 	    
 	    case "Envelope" : drawModule.envelope_sw = cb.isSelected(); break;
 	    case "LarrysLine" : drawModule.LarrysLine_sw = cb.isSelected(); break;
+	    case "RegressionLine" : drawModule.RegressionLine_sw = cb.isSelected(); break;
 	    }
 	    
 	    drawScreen();

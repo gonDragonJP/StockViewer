@@ -154,7 +154,7 @@ public class MenuUtil {
 
 	private static void setTrendLineMenu(Menu menu) {
 
-		String[] menuItemNames = { "05-SMA", "13-SMA", "25-SMA", "Envelope", "LarrysLine" };
+		String[] menuItemNames = { "05-SMA", "13-SMA", "25-SMA", "Envelope", "LarrysLine", "RegressionLine" };
 
 		for (int i = 0; i < menuItemNames.length; i++) {
 
