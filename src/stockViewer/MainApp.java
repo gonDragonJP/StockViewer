@@ -2,9 +2,6 @@ package stockViewer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.quandl.api.java.QDataset;
-import com.quandl.api.java.QuandlConnection;
-
 import javafx.application.Application;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
