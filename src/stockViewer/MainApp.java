@@ -1,24 +1,13 @@
 package stockViewer;
-import java.util.ArrayList;
-import java.util.List;
 
 import javafx.application.Application;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import stockViewer.MenuUtil.OnOrOff;
 import stockViewer.MenuUtil.PeriodRange;
 import stockViewer.MenuUtil.TradeMode;
-import stockViewer.database.CSVFileChecker;
-import stockViewer.database.CSVFileReader;
-import stockViewer.database.DBAccessOfStockDataTable;
-import stockViewer.database.TableMakerForStockData;
-import stockViewer.filterChart.FilterChart;
-import stockViewer.stockdata.StockData;
 import stockViewer.subscreen.SubScreenDrawModule;
 import stockViewer.subscreen.SubScreenDrawModule.Technical;
 import stockViewer.stockdata.ChartData;

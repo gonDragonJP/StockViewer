@@ -8,5 +8,10 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SQLite"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/QuandlAPI"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JSON"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/quandl"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/quandl-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/quandl-tablesaw"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
