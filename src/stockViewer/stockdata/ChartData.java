@@ -22,7 +22,7 @@ public class ChartData {
 		tickerData = new TickerData();
 		dailyDataList = new ArrayList<StockData>();
 		weeklyDataList = new ArrayList<StockData>();
-		stockDataList = null;
+		stockDataList = dailyDataList;
 	}
 	
 	public void loadDB(int tickerCode) {
