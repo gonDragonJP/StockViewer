@@ -51,8 +51,9 @@ public class TickerBoardDialog extends Stage implements MenuCallback, TableCallb
 		
 		this.setTitle("TickerBoardDialog");
 		this.setWidth(500);
-		this.setHeight(200);
-
+		this.setHeight(300);
+		this.setResizable(false);
+		
 		VBox root = new VBox();
 		root.getChildren().addAll(menuBar, tableView);
 		Scene scene = new Scene(root);
